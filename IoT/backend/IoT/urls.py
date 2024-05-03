@@ -23,6 +23,7 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('register/', views.register, name='register'),
     path('api/telemetry/', views.telemetry, name='telemetry'),
+    path('devices/register/', views.register_device, name='register_device'),  
     path('admin/', admin.site.urls),
 ]
 

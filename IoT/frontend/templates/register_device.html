@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация нового устройства</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #dae2f8, #d6a4a4);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: auto;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label, input, select, button, a {
+            display: block;
+            width: 90%;
+            margin: 5px auto;
+        }
+        input, select, button, a {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button, a {
+            background-color: #0088cc;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        a:hover, button:hover {
+            background-color: #005f8c;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Регистрация нового устройства</h2>
+        <form action="{% url 'register_device' %}" method="post">
+            {% csrf_token %}
+            <label for="model">Модель:</label>
+            <input type="text" id="model" name="model" value="{{ form.model.value|default_if_none:'' }}" required>
+            {{ form.model.errors }}
+            <label for="serial_number">Серийный номер:</label>
+            <input type="text" id="serial_number" name="serial_number" value="{{ form.serial_number.value|default_if_none:'' }}" required>
+            {{ form.serial_number.errors }}
+            <label for="type">Тип:</label>
+            <select id="type" name="type" required>
+                {% for type_id, type_name in form.type.field.choices %}
+                    <option value="{{ type_id }}" {% if type_id == form.type.value %}selected{% endif %}>{{ type_name }}</option>
+                {% endfor %}
+            </select>
+            {{ form.type.errors }}
+            <button type="submit">Зарегистрировать устройство</button>
+            <a href="{% url 'index' %}" class="back-button">На главную</a>
+        </form>
+    </div>
+</body>
+</html>

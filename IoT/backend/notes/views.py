@@ -18,6 +18,9 @@ from django.contrib import messages
 from django.db import transaction
 from django import forms
 from django.core.exceptions import ValidationError
+from .models import Devices
+from .forms import DeviceForm
+
 
 
 @api_view(['GET', 'POST'])
@@ -66,7 +69,7 @@ def user_login(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'Вы успешно вошли в систему.')
-            return redirect('index')
+            return redirect('register_device')
         else:
             return render(request, 'login.html', {'error_message': 'Неверное имя пользователя или пароль'})
     return render(request, 'login.html')
@@ -92,3 +95,16 @@ def register(request):
             messages.error(request, 'Пароли не совпадают.')
             return render(request, 'register.html', {'error_message': 'Пароли не совпадают'})
     return render(request, 'register.html')
+
+
+
+
+def register_device(request):
+    if request.method == 'POST':
+        form = DeviceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('register_device')  
+    else:
+        form = DeviceForm()
+    return render(request, 'register_device.html', {'form': form})

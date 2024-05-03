@@ -38,30 +38,13 @@
             text-decoration: none;
         }
 
-        a:hover {
-            text-decoration: underline;
-        }
 
-        .alert {
-            color: #f44336;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        .alert-success {
-            color: #4CAF50; 
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Добро пожаловать в Анализатор качества сна!</h1>
         <p>Здесь вы можете узнать много интересного о функциях нашего сайта.</p>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
         <p>Если вы еще не зарегистрированы, <a href="{% url 'register' %}">зарегистрируйтесь сейчас</a> или перейдите на <a href="{% url 'login' %}">страницу входа</a> для авторизации.</p>
     </div>
 </body>
