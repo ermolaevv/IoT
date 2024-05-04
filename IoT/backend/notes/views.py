@@ -20,7 +20,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import Devices
 from .forms import DeviceForm
-
+import uuid
+from uuid import uuid4
 
 
 @api_view(['GET', 'POST'])
@@ -58,8 +59,11 @@ def telemetry(request):
         return Response(model_to_dict(telemetry), status=status.HTTP_200_OK)
     return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
+
+
 def index(request):
     return render(request, 'index.html')
+
 
 def user_login(request):
     if request.method == 'POST':
@@ -97,14 +101,22 @@ def register(request):
     return render(request, 'register.html')
 
 
-
-
 def register_device(request):
     if request.method == 'POST':
         form = DeviceForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('register_device')  
+            device = form.save(commit=False)
+            if request.user.is_authenticated:
+                device.owner = request.user.id
+                device.token = uuid.uuid4().hex
+                device.save()
+                messages.success(request, 'Устройство успешно зарегистрировано.')
+                return redirect('register_device')
+            else:
+                messages.error(request, 'Пожалуйста, войдите в систему перед регистрацией устройства.')
+                return redirect('login')
+        else:
+            messages.error(request, 'Ошибка в форме.')
     else:
         form = DeviceForm()
     return render(request, 'register_device.html', {'form': form})
