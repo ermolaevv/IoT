@@ -16,7 +16,6 @@
             height: 100vh;
             text-align: center;
         }
-
         .container {
             max-width: 600px;
             padding: 20px;
@@ -24,28 +23,48 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        h1 {
-            color: #5a5a5a;
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            border-radius: 5px;
+            z-index: 1001;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s, top 0.5s;
         }
-
-        p {
-            line-height: 1.6;
-        }
-
-        a {
-            color: #0088cc;
-            text-decoration: none;
-        }
-
-
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Добро пожаловать в Анализатор качества сна!</h1>
+        {% if messages %}
+            <div id="successMessage" class="alert">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
         <p>Здесь вы можете узнать много интересного о функциях нашего сайта.</p>
         <p>Если вы еще не зарегистрированы, <a href="{% url 'register' %}">зарегистрируйтесь сейчас</a> или перейдите на <a href="{% url 'login' %}">страницу входа</a> для авторизации.</p>
     </div>
+    <script>
+        window.onload = function() {
+            var messageBox = document.getElementById('successMessage');
+            if (messageBox) {
+                messageBox.style.display = 'block';
+                messageBox.style.opacity = 1;
+                messageBox.style.top = "30px";
+                setTimeout(function() {
+                    messageBox.style.opacity = 0;
+                    messageBox.style.top = "20px";
+                    setTimeout(function() { messageBox.style.display = 'none'; }, 500);
+                }, 3000);
+            }
+        };
+    </script>
 </body>
 </html>

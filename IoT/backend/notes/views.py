@@ -19,6 +19,7 @@ from django.db import transaction
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Devices
+from .models import DeviceType
 from .forms import DeviceForm
 import uuid
 from uuid import uuid4

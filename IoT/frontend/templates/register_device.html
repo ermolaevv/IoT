@@ -35,7 +35,7 @@
             width: 90%;
             margin: 5px auto;
         }
-        input, select, button, a {
+        input, select, button {
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -49,33 +49,61 @@
         a:hover, button:hover {
             background-color: #005f8c;
         }
-        .error {
-            color: red;
-            margin-top: 10px;
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            border-radius: 5px;
+            z-index: 1001;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s, top 0.5s;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Регистрация нового устройства</h2>
+        {% if messages %}
+            <div id="successMessage" class="alert">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
         <form action="{% url 'register_device' %}" method="post">
             {% csrf_token %}
             <label for="model">Модель:</label>
-            <input type="text" id="model" name="model" value="{{ form.model.value|default_if_none:'' }}" required>
-            {{ form.model.errors }}
+            <input type="text" id="model" name="model" required>
             <label for="serial_number">Серийный номер:</label>
-            <input type="text" id="serial_number" name="serial_number" value="{{ form.serial_number.value|default_if_none:'' }}" required>
-            {{ form.serial_number.errors }}
+            <input type="text" id="serial_number" name="serial_number" required>
             <label for="type">Тип:</label>
             <select id="type" name="type" required>
                 {% for type_id, type_name in form.type.field.choices %}
                     <option value="{{ type_id }}" {% if type_id == form.type.value %}selected{% endif %}>{{ type_name }}</option>
                 {% endfor %}
             </select>
-            {{ form.type.errors }}
             <button type="submit">Зарегистрировать устройство</button>
             <a href="{% url 'index' %}" class="back-button">На главную</a>
         </form>
     </div>
+    <script>
+        window.onload = function() {
+            var messageBox = document.getElementById('successMessage');
+            if (messageBox) {
+                messageBox.style.display = 'block';
+                messageBox.style.opacity = 1;
+                messageBox.style.top = "30px";
+                setTimeout(function() {
+                    messageBox.style.opacity = 0;
+                    messageBox.style.top = "20px";
+                    setTimeout(function() { messageBox.style.display = 'none'; }, 500);
+                }, 3000);
+            }
+        };
+    </script>
 </body>
 </html>
