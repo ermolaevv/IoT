@@ -11,8 +11,8 @@ path = os.path.dirname(os.path.abspath(argv[0]))
 config.read(path + r'\bot.ini')
 
 TOKENS = {
-    'watch': argv[1],
-    'noise': argv[2],
+    'noise': argv[1],
+    'watch': argv[2],
     'humidity': argv[3],
     'thermometer': argv[4]
 }
@@ -45,6 +45,9 @@ URL = config["WEB"]["URL"]
 TIMER = -1
 
 def post(token, value):
+    if (token == "-"):
+        return
+    
     try:
         respose = rq_post(URL, params={'token' : token}, json=value)
         print(f"POST /?token={token} {value.items()} responce code: {respose.status_code}")

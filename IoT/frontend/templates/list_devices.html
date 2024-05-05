@@ -81,6 +81,7 @@
     </style>
 </head>
 <body>
+    {% load tags %}
     <div class="container">
         {% if messages %}
         {% for message in messages %}
@@ -95,13 +96,16 @@
                 <tr>
                     <th>Модель</th>
                     <th>Серийный номер</th>
+                    <th>Последняя телеметрия</th>
                 </tr>
             </thead>
             <tbody>
                 {% for device in devices %}
+                {% get_lastest_telemetry device.token as telemetry %}
                 <tr>
                     <td>{{ device.model }}</td>
                     <td>{{ device.serial_number }}</td>
+                    <td>{{ telemetry }}</td>
                 </tr>
                 {% empty %}
                 <tr>

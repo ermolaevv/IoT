@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from .models import Telemetry, Devices
 from django.forms.models import model_to_dict
 from django.utils import timezone
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User 
 from django.db.models import Q
 from django.db import IntegrityError, transaction
@@ -24,40 +23,38 @@ from .forms import DeviceForm
 import uuid
 from uuid import uuid4
 
-
 @api_view(['GET', 'POST'])
 def telemetry(request):
-    url = request.get_full_path().split("?")[1]
-    params = dict()
-
-    for param in url.split("&"):
-        name, value = param.split("=")
-        params[name] = value
-
+    token = request.query_params['token']
 
     if request.method == 'GET':
         print("GET", request.data)
-
-        try:
-            telemetry = Telemetry.objects.filter(token=params['token']).latest('ressived_time')
-        except ObjectDoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(model_to_dict(telemetry), status=status.HTTP_200_OK)
+        #if request.is_authenticated:
+        if True:
+            try:
+                telemetry = Telemetry.objects.filter(token=token).latest('ressived_time')
+                return Response(model_to_dict(telemetry), status=status.HTTP_200_OK)
+            except ObjectDoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     elif request.method == 'POST':
         print("POST", request.data)
-        
-        try:
-            Devices.objects.get(token=params['token'])
-        except ObjectDoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        #if request.is_authenticated:
+        if True:
+            try:
+                Devices.objects.get(token=token)
+            except ObjectDoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
 
-        telemetry = Telemetry.objects.create(
-            token=token,
-            received_time=timezone.now(),
-            data=request.data
-        )
-        return Response(model_to_dict(telemetry), status=status.HTTP_200_OK)
+            telemetry = Telemetry.objects.create(
+                token=token,
+                data=request.data
+            )
+            return Response(model_to_dict(telemetry), status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
     return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 

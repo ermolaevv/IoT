@@ -2,10 +2,10 @@ from datetime import datetime
 import uuid
 from django.db import models
 from django.conf import settings
-
+from django.utils import timezone
 class Telemetry(models.Model):
     token = models.CharField(max_length=128)
-    ressived_time = models.DateTimeField(default=lambda: datetime.now().isoformat())
+    ressived_time = models.DateTimeField(default=timezone.now)
     data = models.JSONField()
 
 class DeviceType(models.Model):
