@@ -110,14 +110,26 @@ def register_device(request):
             if request.user.is_authenticated:
                 device.owner = request.user.id
                 device.token = uuid.uuid4().hex
-                device.save()
-                messages.success(request, 'Устройство успешно зарегистрировано.')
-                return redirect('register_device')
+                try:
+                    device.save()
+                    messages.success(request, 'Устройство успешно зарегистрировано.')
+                    return redirect('list_devices')
+                except IntegrityError:
+                    messages.error(request, 'Устройство с таким модельным номером или серийным номером уже существует.')
+                    return render(request, 'register_device.html', {'form': form, 'devices': Devices.objects.filter(owner=request.user.id)})
             else:
                 messages.error(request, 'Пожалуйста, войдите в систему перед регистрацией устройства.')
                 return redirect('login')
         else:
-            messages.error(request, 'Ошибка в форме.')
+            messages.error(request, 'Устройство с таким модельным номером или серийным номером уже существует!')
     else:
         form = DeviceForm()
     return render(request, 'register_device.html', {'form': form})
+
+def list_devices(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    devices = Devices.objects.filter(owner=request.user.id)
+    return render(request, 'list_devices.html', {'devices': devices})
+

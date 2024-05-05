@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Регистрация нового устройства</title>
+    <title>Список устройств</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -18,33 +18,36 @@
         }
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             padding: 20px;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin: auto;
         }
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
         }
-        label, input, select, button, a {
-            display: block;
-            width: 90%;
-            margin: 5px auto;
-        }
-        input, select, button {
+        th, td {
             padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
         button, a {
-            background-color: #0088cc;
-            color: white;
-            cursor: pointer;
-            text-decoration: none;
+        margin-top: 10px; 
+        padding: 8px 16px; 
+        background-color: #0088cc;
+        color: white;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px; 
+        }
+        table + a {
+            margin-top: 10px;
         }
         a:hover, button:hover {
             background-color: #005f8c;
@@ -74,13 +77,11 @@
         display: none;
         opacity: 0;
         transition: opacity 0.5s, top 0.5s;
-        }
-
+    }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Регистрация нового устройства</h2>
         {% if messages %}
         {% for message in messages %}
             <div id="{{ message.tags }}Message" class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
@@ -88,22 +89,28 @@
             </div>
         {% endfor %}
         {% endif %}
-        <form action="{% url 'register_device' %}" method="post">
-            {% csrf_token %}
-            <label for="model">Модель:</label>
-            <input type="text" id="model" name="model" required>
-            <label for="serial_number">Серийный номер:</label>
-            <input type="text" id="serial_number" name="serial_number" required>
-            <label for="type">Тип:</label>
-            <select id="type" name="type" required>
-                {% for type_id, type_name in form.type.field.choices %}
-                    <option value="{{ type_id }}" {% if type_id == form.type.value %}selected{% endif %}>{{ type_name }}</option>
+        <h2>Список ваших устройств</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Модель</th>
+                    <th>Серийный номер</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for device in devices %}
+                <tr>
+                    <td>{{ device.model }}</td>
+                    <td>{{ device.serial_number }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Нет зарегистрированных устройств.</td>
+                </tr>
                 {% endfor %}
-            </select>
-            <button type="submit">Зарегистрировать устройство</button>
-            <a href="{% url 'index' %}" class="back-button">На главную</a>
-        </form>
-        <a href="{% url 'list_devices' %}" class="show-devices-button">Показать список устройств</a>
+            </tbody>
+        </table>
+        <a href="{% url 'register_device' %}">Вернуться назад</a>
     </div>
     <script>
         window.onload = function() {
@@ -116,7 +123,6 @@
                 showMessage(errorMessageBox);
             }
         };
-    
         function showMessage(messageBox) {
             messageBox.style.display = 'block';
             messageBox.style.opacity = 1;
@@ -127,6 +133,6 @@
                 setTimeout(function() { messageBox.style.display = 'none'; }, 500);
             }, 3000);
         }
-    </script>    
+    </script>
 </body>
 </html>

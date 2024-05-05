@@ -24,6 +24,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('api/telemetry/', views.telemetry, name='telemetry'),
     path('devices/register/', views.register_device, name='register_device'),  
+    path('list_devices/', views.list_devices, name='list_devices'),
     path('admin/', admin.site.urls),
 ]
 
