@@ -6,7 +6,9 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #dae2f8, #d6a4a4);
+            background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
+            background-size: cover;
+            background-position: center;
             color: #333;
             margin: 0;
             padding: 0;
@@ -18,12 +20,14 @@
         }
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 350px;
+            background-color: #ffffff;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-bottom: 15px;
         }
         form {
             display: flex;
@@ -31,23 +35,28 @@
             align-items: center;
         }
         label, input, select, button, a {
-            display: block;
-            width: 90%;
-            margin: 5px auto;
+            width: calc(100% - 20px);
+            margin: 5px 0;
         }
-        input, select, button {
-            padding: 8px;
+        input, select {
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            background-color: #f8f8f8;
         }
         button, a {
-            background-color: #0088cc;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
             color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            text-decoration: none;
+            transition: background-color 0.3s ease;
         }
-        a:hover, button:hover {
-            background-color: #005f8c;
+        button:hover, a:hover {
+            background-color: #0056b3;
         }
         .alert {
             position: fixed;
@@ -63,24 +72,12 @@
             transition: opacity 0.5s, top 0.5s;
         }
         .alert-error {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #f44336; 
-        color: white;
-        padding: 16px;
-        border-radius: 5px;
-        z-index: 1001;
-        display: none;
-        opacity: 0;
-        transition: opacity 0.5s, top 0.5s;
+            background-color: #f44336;
         }
-
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Регистрация нового устройства</h2>
         {% if messages %}
         {% for message in messages %}
             <div id="{{ message.tags }}Message" class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
@@ -88,6 +85,7 @@
             </div>
         {% endfor %}
         {% endif %}
+        <h2>Регистрация нового устройства</h2>
         <form action="{% url 'register_device' %}" method="post">
             {% csrf_token %}
             <label for="model">Модель:</label>
@@ -103,7 +101,6 @@
             <button type="submit">Зарегистрировать устройство</button>
             <a href="{% url 'index' %}" class="back-button">На главную</a>
         </form>
-        <a href="{% url 'list_devices' %}" class="show-devices-button">Показать список устройств</a>
     </div>
     <script>
         window.onload = function() {
@@ -116,7 +113,6 @@
                 showMessage(errorMessageBox);
             }
         };
-    
         function showMessage(messageBox) {
             messageBox.style.display = 'block';
             messageBox.style.opacity = 1;
@@ -127,6 +123,6 @@
                 setTimeout(function() { messageBox.style.display = 'none'; }, 500);
             }, 3000);
         }
-    </script>    
+    </script>
 </body>
 </html>

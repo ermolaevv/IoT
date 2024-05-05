@@ -71,7 +71,7 @@ def user_login(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'Вы успешно вошли в систему.')
-            return redirect('register_device')
+            return redirect('list_devices')
         else:
             return render(request, 'login.html', {'error_message': 'Неверное имя пользователя или пароль'})
     return render(request, 'login.html')
