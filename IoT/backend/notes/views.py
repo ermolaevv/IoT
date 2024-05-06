@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from .models import Telemetry, Devices
 from django.forms.models import model_to_dict
 from django.utils import timezone
+from datetime import datetime
 from django.contrib.auth.models import User 
 from django.db.models import Q
 from django.db import IntegrityError, transaction
@@ -36,8 +37,13 @@ def telemetry(request):
         #if request.is_authenticated:
         if True:
             try:
-                telemetry = Telemetry.objects.filter(token=token).latest('ressived_time')
-                return Response(model_to_dict(telemetry), status=status.HTTP_200_OK)
+                try:
+                    count = int(request.query_params['count'])
+                except:
+                    count = 1
+
+                telemetry = Telemetry.objects.filter(token=token).order_by('-ressived_time')[:count].values()
+                return Response(telemetry[::-1], status=status.HTTP_200_OK)
             except ObjectDoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:
@@ -61,7 +67,22 @@ def telemetry(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
     return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
+@api_view(['GET',])
+def type(request):
+    token = request.query_params['token']
 
+    if request.method == 'GET':
+        print("GET", request.data)
+        #if request.is_authenticated:
+        if True:
+            try:
+                device = Devices.objects.get(token=token)
+                return Response(device.type.type, status=status.HTTP_200_OK)
+            except ObjectDoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 def index(request):
     return render(request, 'index.html')

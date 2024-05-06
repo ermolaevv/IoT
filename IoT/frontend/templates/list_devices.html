@@ -86,9 +86,13 @@
         background-color: #f44336;
     }
     </style>
+    {% load tags %}
+    {% load static %}
+    <script src="{% static 'jquery/jquery-3.7.1.min.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-    {% load tags %}
+
     <div class="container">
         {% if messages %}
         {% for message in messages %}
@@ -183,6 +187,49 @@
                     alert('Произошла ошибка при удалении: ' + error.message);
                 });
             }
+        }
+        function loadTelemetryData() {
+            var token = document.getElementById("deviceSelector").value;
+            $.ajax({
+                url: '../api/telemetry/',
+                type: 'GET',
+                data: {
+                    'token': token,
+                    'count': 10
+                },
+                success: function(data){
+                    getType(token, data);
+                },
+                error: function(){
+                    showMessage("Ошибка получения данных");
+                }
+            });         
+        }
+        function getType(token, data) {
+            $.ajax({
+                url: '../api/type/',
+                type: 'GET',
+                data: {
+                    'token': token,
+                },
+                success: function(type){
+                    renderChart(data, type);
+                },
+                error: function(){
+                    showMessage("Ошибка получения типа устройства");
+                }
+            });        
+        }
+        function renderChart(data, type) {
+            console.log(type, data)
+            var c = document.getElementById("telemetryChart");
+            var ctx = c.getContext("2d");
+            ctx.font = "30px Arial";
+
+            if (type == 'noise sensor') {
+                ;
+            }
+            // ...
         }
     </script>
 </body>
