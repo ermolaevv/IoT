@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Список устройств</title>
     <style>
-        body {
+         body {
             font-family: 'Roboto', sans-serif;
             background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
             background-size: cover;
@@ -20,11 +20,11 @@
         }
         .container {
             width: 100%;
-            max-width: 850px; /* Увеличенный размер для лучшей вместимости */
+            max-width: 850px; 
             background-color: #ffffff;
             border-radius: 10px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            padding: 20px 40px 60px; /* Увеличенный нижний отступ */
+            padding: 20px 40px;
             position: relative;
             overflow: auto;
         }
@@ -45,25 +45,28 @@
         th {
             background-color: #f8f8f8;
         }
-
-button, a {
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 16px;
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-    margin: 0 10px; /* Добавлен отступ между кнопками */
-}
-
-a:hover, button:hover {
-    background-color: #0056b3;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    transform: translateY(-2px);
-}
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; 
+        }
+        button, a {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            margin: 0 10px; 
+        }
+        a:hover, button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
         .alert, .alert-error {
             position: fixed;
             top: 20px;
@@ -119,8 +122,11 @@ a:hover, button:hover {
                 {% endfor %}
             </tbody>
         </table>
-        <a href="{% url 'register_device' %}">Добавить новое устройство</a>
-        <a href="{% url 'index' %}" class="back-button">На главную</a>
+        <div class="buttons">
+            <a href="{% url 'register_device' %}">Добавить новое устройство</a>
+<a href="{% url 'index' %}">На главную</a>
+
+        </div>
     </div>
     <script>
         window.onload = function() {

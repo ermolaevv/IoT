@@ -54,6 +54,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            text-decoration: none;
         }
         button:hover, a:hover {
             background-color: #0056b3;
@@ -99,7 +100,7 @@
                 {% endfor %}
             </select>
             <button type="submit">Зарегистрировать устройство</button>
-            <a href="{% url 'index' %}" class="back-button">На главную</a>
+            <a href="{% url 'list_devices' %}">Назад</a>
         </form>
     </div>
     <script>

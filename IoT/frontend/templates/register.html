@@ -62,15 +62,34 @@
         a:hover {
             color: #0056b3;
         }
-        .error {
-            color: red;
-            margin-bottom: 10px;
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            border-radius: 5px;
+            z-index: 1001;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s, top 0.5s;
+        }
+        .alert-error {
+            background-color: #f44336;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Регистрация нового пользователя</h2>
+        {% if messages %}
+        {% for message in messages %}
+            <div id="{{ message.tags }}Message" class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
         <form method="post">
             {% csrf_token %}
             <label for="username">Имя пользователя:</label>
@@ -89,5 +108,27 @@
         </form>
         <p>Если у вас уже есть аккаунт, <a href="{% url 'login' %}">войдите здесь</a>.</p>
     </div>
+    <script>
+        window.onload = function() {
+            var successMessageBox = document.getElementById('successMessage');
+            var errorMessageBox = document.getElementById('errorMessage');
+            if (successMessageBox) {
+                showMessage(successMessageBox);
+            }
+            if (errorMessageBox) {
+                showMessage(errorMessageBox);
+            }
+        };
+        function showMessage(messageBox) {
+            messageBox.style.display = 'block';
+            messageBox.style.opacity = 1;
+            messageBox.style.top = "30px";
+            setTimeout(function() {
+                messageBox.style.opacity = 0;
+                messageBox.style.top = "20px";
+                setTimeout(function() { messageBox.style.display = 'none'; }, 500);
+            }, 3000);
+        }
+    </script>
 </body>
 </html>

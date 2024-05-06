@@ -89,10 +89,9 @@ def register(request):
                 user.save()
                 login(request, user)
                 messages.success(request, 'Регистрация прошла успешно. Добро пожаловать!')
-                return redirect('index')
+                return redirect('register')
             except IntegrityError:
                 messages.error(request, 'Пользователь с таким именем уже существует.')
-                return render(request, 'register.html', {'error_message': 'Пользователь с таким именем уже существует'})
         else:
             messages.error(request, 'Пароли не совпадают.')
             return render(request, 'register.html', {'error_message': 'Пароли не совпадают'})
