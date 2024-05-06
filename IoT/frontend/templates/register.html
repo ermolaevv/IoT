@@ -6,8 +6,9 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #dae2f8, #d6a4a4);
-            color: #333;
+            background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
+            background-size: cover;
+            background-position: center;
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,46 +19,77 @@
         }
         .container {
             width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: auto;
+            max-width: 350px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            padding: 40px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
         }
         form {
             display: flex;
             flex-direction: column;
-            align-items: center;
         }
-        label, input, button, a {
-            display: block;
-            width: 95%;
-            margin: 5px auto;
+        label {
+            margin-bottom: 5px; 
         }
-        input, button, a {
-            padding: 8px;
-            border: 1px solid #ccc;
+        input, button {
+            padding: 10px;
+            margin-bottom: 8px;
             border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
         }
-        button, a {
-            background-color: #0088cc;
+        button {
             color: white;
+            background-color: #007BFF;
+            border: none;
             cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        a {
+            color: #007BFF;
             text-decoration: none;
+            transition: color 0.3s;
         }
-        a:hover, button:hover {
-            background-color: #005f8c;
+        a:hover {
+            color: #0056b3;
         }
-        .error {
-            color: red;
-            margin-top: 10px;
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            border-radius: 5px;
+            z-index: 1001;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s, top 0.5s;
+        }
+        .alert-error {
+            background-color: #f44336;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Регистрация нового пользователя</h2>
+        {% if messages %}
+        {% for message in messages %}
+            <div id="{{ message.tags }}Message" class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
         <form method="post">
             {% csrf_token %}
             <label for="username">Имя пользователя:</label>
@@ -76,6 +108,27 @@
         </form>
         <p>Если у вас уже есть аккаунт, <a href="{% url 'login' %}">войдите здесь</a>.</p>
     </div>
-    
+    <script>
+        window.onload = function() {
+            var successMessageBox = document.getElementById('successMessage');
+            var errorMessageBox = document.getElementById('errorMessage');
+            if (successMessageBox) {
+                showMessage(successMessageBox);
+            }
+            if (errorMessageBox) {
+                showMessage(errorMessageBox);
+            }
+        };
+        function showMessage(messageBox) {
+            messageBox.style.display = 'block';
+            messageBox.style.opacity = 1;
+            messageBox.style.top = "30px";
+            setTimeout(function() {
+                messageBox.style.opacity = 0;
+                messageBox.style.top = "20px";
+                setTimeout(function() { messageBox.style.display = 'none'; }, 500);
+            }, 3000);
+        }
+    </script>
 </body>
 </html>

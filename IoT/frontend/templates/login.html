@@ -6,8 +6,9 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #dae2f8, #d6a4a4);
-            color: #333;
+            background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
+            background-size: cover;
+            background-position: center;
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,40 +19,49 @@
         }
         .container {
             width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: auto;
+            max-width: 350px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            padding: 40px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
         }
         form {
             display: flex;
             flex-direction: column;
-            align-items: center;
         }
-        label, input, button, a {
-            display: block;
-            width: 90%;
-            margin: 5px auto;
-        }
-        input, button, a {
-            padding: 8px;
-            border: 1px solid #ccc;
+        input, button {
+            padding: 15px;
+            margin-bottom: 10px;
             border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
         }
-        button, a {
-            background-color: #0088cc;
+        button {
             color: white;
+            background-color: #007BFF;
+            border: none;
             cursor: pointer;
-            text-decoration: none;
+            transition: background-color 0.3s;
         }
-        a:hover, button:hover {
-            background-color: #005f8c;
+        button:hover {
+            background-color: #0056b3;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #0056b3;
         }
         .error {
             color: red;
-            margin-top: 10px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -60,17 +70,13 @@
         <h2>Вход в систему</h2>
         <form method="post">
             {% csrf_token %}
-            <label for="username">Имя пользователя:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Пароль:</label>
-            <input type="password" id="password" name="password" required>
+            <input type="text" id="username" name="username" placeholder="Имя пользователя" required>
+            <input type="password" id="password" name="password" placeholder="Пароль" required>
             <button type="submit">Войти</button>
-            {% if error_message %}
-                <p class="error">{{ error_message }}</p>
-            {% endif %}
-            <a href="{% url 'index' %}" class="back-button">На главную</a>
+            <div class="error">{{ error_message }}</div>
+            <a href="/">На главную</a>
+            <p>Если у вас еще нет аккаунта, <a href="/register">зарегистрируйтесь здесь</a>.</p>
         </form>
-        <p>Если у вас еще нет аккаунта, <a href="{% url 'register' %}">зарегистрируйтесь здесь</a>.</p>
     </div>
 </body>
 </html>

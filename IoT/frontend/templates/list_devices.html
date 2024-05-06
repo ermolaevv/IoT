@@ -4,72 +4,76 @@
     <meta charset="UTF-8">
     <title>Список устройств</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #dae2f8, #d6a4a4);
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: auto;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        button, a {
-        margin-top: 10px; 
-        padding: 8px 16px; 
-        background-color: #0088cc;
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
+        background-size: cover;
+        background-position: center;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+    }
+    .container {
+        width: 100%;
+        max-width: 900px; 
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        padding: 20px;
+    }
+    h2 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        table-layout: auto; 
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        word-wrap: break-word; 
+        white-space: normal; 
+    }
+
+    th {
+        background-color: #f8f8f8;
+    }
+    .buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px; 
+    }
+    button, a {
+        padding: 10px 20px;
+        background-color: #007BFF;
         color: white;
         cursor: pointer;
         border: none;
         border-radius: 5px;
         text-decoration: none;
-        font-size: 14px; 
-        }
-        table + a {
-            margin-top: 10px;
-        }
-        a:hover, button:hover {
-            background-color: #005f8c;
-        }
-        .alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 16px;
-            border-radius: 5px;
-            z-index: 1001;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s, top 0.5s;
-        }
-        .alert-error {
+        font-size: 16px;
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        margin: 0 10px; 
+    }
+    a:hover, button:hover {
+        background-color: #0056b3;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        transform: translateY(-2px);
+    }
+    .alert, .alert-error {
         position: fixed;
         top: 20px;
         right: 20px;
-        background-color: #f44336; 
+        background-color: #4CAF50;
         color: white;
         padding: 16px;
         border-radius: 5px;
@@ -77,6 +81,9 @@
         display: none;
         opacity: 0;
         transition: opacity 0.5s, top 0.5s;
+    }
+    .alert-error {
+        background-color: #f44336;
     }
     </style>
 </head>
@@ -96,7 +103,9 @@
                 <tr>
                     <th>Модель</th>
                     <th>Серийный номер</th>
+                    <th>Токен</th>
                     <th>Последняя телеметрия</th>
+                    <th>Действия</th> 
                 </tr>
             </thead>
             <tbody>
@@ -105,16 +114,31 @@
                 <tr>
                     <td>{{ device.model }}</td>
                     <td>{{ device.serial_number }}</td>
+                    <td>{{ device.token }}</td>
                     <td>{{ telemetry }}</td>
+                    <td><button onclick="deleteDevice('{{ device.id }}')">Удалить</button></td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4">Нет зарегистрированных устройств.</td>
+                    <td colspan="5">Нет зарегистрированных устройств.</td>
                 </tr>
                 {% endfor %}
-            </tbody>
+            </tbody>            
         </table>
-        <a href="{% url 'register_device' %}">Вернуться назад</a>
+        <div class="buttons">
+            <a href="{% url 'register_device' %}">Добавить новое устройство</a>
+            <a href="{% url 'index' %}">На главную</a>
+        </div>
+        <div class="graph-section">
+            <h2>График телеметрии</h2>
+            <select id="deviceSelector">
+                {% for device in devices %}
+                <option value="{{ device.token }}">{{ device.model }}</option>
+                {% endfor %}
+            </select>
+            <button onclick="loadTelemetryData()">Показать данные</button>
+            <canvas id="telemetryChart"></canvas>
+        </div>
     </div>
     <script>
         window.onload = function() {
@@ -136,6 +160,29 @@
                 messageBox.style.top = "20px";
                 setTimeout(function() { messageBox.style.display = 'none'; }, 500);
             }, 3000);
+        }
+        function deleteDevice(deviceId) {
+            if (confirm('Вы уверены, что хотите удалить это устройство?')) {
+                fetch('/delete-device/', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ device_id: deviceId })
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Устройство удалено');
+                        location.reload(); 
+                    } else {
+                        response.json().then(data => {
+                            alert(data.message); 
+                        });
+                    }
+                }).catch(error => {
+                    alert('Произошла ошибка при удалении: ' + error.message);
+                });
+            }
         }
     </script>
 </body>
