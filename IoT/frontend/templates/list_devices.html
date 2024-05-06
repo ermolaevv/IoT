@@ -129,6 +129,16 @@
             <a href="{% url 'register_device' %}">Добавить новое устройство</a>
             <a href="{% url 'index' %}">На главную</a>
         </div>
+        <div class="graph-section">
+            <h2>График телеметрии</h2>
+            <select id="deviceSelector">
+                {% for device in devices %}
+                <option value="{{ device.token }}">{{ device.model }}</option>
+                {% endfor %}
+            </select>
+            <button onclick="loadTelemetryData()">Показать данные</button>
+            <canvas id="telemetryChart"></canvas>
+        </div>
     </div>
     <script>
         window.onload = function() {
