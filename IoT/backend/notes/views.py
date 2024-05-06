@@ -22,6 +22,10 @@ from .models import DeviceType
 from .forms import DeviceForm
 import uuid
 from uuid import uuid4
+import json
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
 
 @api_view(['GET', 'POST'])
 def telemetry(request):
@@ -128,4 +132,18 @@ def list_devices(request):
 
     devices = Devices.objects.filter(owner=request.user.id)
     return render(request, 'list_devices.html', {'devices': devices})
+
+
+def delete_device(request):
+    data = json.loads(request.body)
+    device_id = data.get('device_id')
+    try:
+        device = Devices.objects.get(id=device_id, owner=request.user.id)  
+        device.delete()
+        return JsonResponse({'status': 'success'}, status=200)
+    except Devices.DoesNotExist:  
+        return JsonResponse({'status': 'not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
 

@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/telemetry/', views.telemetry, name='telemetry'),
     path('devices/register/', views.register_device, name='register_device'),  
     path('list_devices/', views.list_devices, name='list_devices'),
+    path('delete-device/', views.delete_device, name='delete_device'),
     path('admin/', admin.site.urls),
 ]
 
