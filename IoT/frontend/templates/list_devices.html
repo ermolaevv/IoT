@@ -85,6 +85,23 @@
     .alert-error {
         background-color: #f44336;
     }
+    .graph-section {
+        text-align: center; 
+        margin-bottom: 20px;
+    }
+    .controls {
+        display: flex; 
+        justify-content: center; 
+        margin-bottom: 20px; 
+    }
+    #deviceSelector, #dataCountSelector, button {
+        margin-right: 10px; 
+        padding: 10px 15px; 
+    }
+    #telemetryChart {
+        width: 800px; 
+        height: 400px; 
+    }
     </style>
     {% load tags %}
     {% load static %}
@@ -135,15 +152,25 @@
         </div>
         <div class="graph-section">
             <h2>График телеметрии</h2>
-            <select id="deviceSelector">
-                {% for device in devices %}
-                <option value="{{ device.token }}">{{ device.model }}</option>
-                {% endfor %}
-            </select>
-            <button onclick="loadTelemetryData()">Показать данные</button>
+            <div class="controls">
+                <select id="deviceSelector">
+                    {% for device in devices %}
+                    <option value="{{ device.token }}">{{ device.model }}</option>
+                    {% endfor %}
+                </select>
+                <select id="dataCountSelector">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <button onclick="loadTelemetryData()">Показать данные</button>
+            </div>
             <canvas id="telemetryChart"></canvas>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script>
         window.onload = function() {
             var successMessageBox = document.getElementById('successMessage');
@@ -190,12 +217,13 @@
         }
         function loadTelemetryData() {
             var token = document.getElementById("deviceSelector").value;
+            var count = document.getElementById("dataCountSelector").value;
             $.ajax({
                 url: '../api/telemetry/',
                 type: 'GET',
                 data: {
                     'token': token,
-                    'count': 10
+                    'count': count
                 },
                 success: function(data){
                     getType(token, data);
@@ -220,16 +248,55 @@
                 }
             });        
         }
+        var currentChart = null; 
         function renderChart(data, type) {
-            console.log(type, data)
             var c = document.getElementById("telemetryChart");
             var ctx = c.getContext("2d");
-            ctx.font = "30px Arial";
-
-            if (type == 'noise sensor') {
-                ;
+            if (currentChart) { 
+                currentChart.destroy(); 
             }
-            // ...
+            ctx.clearRect(0, 0, c.width, c.height); 
+            var labels = data.map(d => {
+                var parsedDate = moment(d.ressived_time, "YYYY-MM-DD HH:mm:ss");
+                return parsedDate.isValid() ? parsedDate.format("HH:mm:ss") : "Некорректная дата";
+            });
+            var chartData = [];
+
+            switch(type) {
+                case 'noise sensor':
+                    chartData = data.map(d => d.data.noise);
+                    break;
+                case 'smart watch':
+                    chartData = data.map(d => d.data.average_day_heart_rate);
+                    break;
+                case 'humidity sensor':
+                    chartData = data.map(d => d.data.humidity);
+                    break;
+                case 'thermometer':
+                    chartData = data.map(d => d.data.temperature);
+                    break;
+            }
+
+            currentChart = new Chart(ctx, { 
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: type,
+                        data: chartData,
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>
