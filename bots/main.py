@@ -74,8 +74,8 @@ def post_values():
     post(TOKENS['watch'], {
         'time_falling_sleep': time_falling.isoformat(),
         'duration': duration,
-        'avarage_day_heart_rate': heart_rate,
-        'avarage_sleep_heart_rate': sleep_heart_rate,
+        'average_day_heart_rate': heart_rate,
+        'average_sleep_heart_rate': sleep_heart_rate,
     })
 
     temperature = randint(MIN_ROOM_TEMPERATURE, MAX_ROOM_TEMPERATURE)

@@ -257,37 +257,55 @@
             }
             ctx.clearRect(0, 0, c.width, c.height); 
             var labels = data.map(d => {
-                var parsedDate = moment(d.ressived_time, "YYYY-MM-DD HH:mm:ss");
-                return parsedDate.isValid() ? parsedDate.format("HH:mm:ss") : "Некорректная дата";
+                var parsedDate = moment.utc(d.ressived_time, "YYYY-MM-DD HH:mm:ss");
+                return parsedDate.isValid() ? moment(parsedDate.toDate()).format('HH:mm:ss') : "Некорректная дата";
             });
             var chartData = [];
 
             switch(type) {
                 case 'noise sensor':
+                    label = 'Уровень шума';
                     chartData = data.map(d => d.data.noise);
                     break;
                 case 'smart watch':
+                    label = 'Средняя частота сердечных сокращений днем';
+                    label2 = 'Средняя частота сердечных сокращений во время сна';
                     chartData = data.map(d => d.data.average_day_heart_rate);
+                    chartData2 = data.map(d => d.data.average_sleep_heart_rate);
                     break;
                 case 'humidity sensor':
+                    label = 'Уровень влажности';
                     chartData = data.map(d => d.data.humidity);
                     break;
                 case 'thermometer':
+                    label = 'Уровень температуры';
                     chartData = data.map(d => d.data.temperature);
                     break;
+            }
+                    
+            dataset = [{
+                        label: label,
+                        data: chartData,
+                        fill: false,
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    }];
+            
+            if (type == 'smart watch') {
+                dataset.push({
+                    label: label2,
+                    data: chartData2,
+                    fill: false,
+                    borderColor: 'rgb(34, 120, 135)',
+                    tension: 0.1
+                });
             }
 
             currentChart = new Chart(ctx, { 
                 type: 'line',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: type,
-                        data: chartData,
-                        fill: false,
-                        borderColor: 'rgb(54, 162, 235)',
-                        tension: 0.1
-                    }]
+                    datasets: dataset
                 },
                 options: {
                     scales: {
